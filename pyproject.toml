@@ -1,0 +1,28 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "lens-ingest"
+version = "0.0.1"
+description = "The Lens — intake: turn source material into staged candidate records."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "Apache-2.0" }
+authors = [{ name = "Liz Osborn" }]
+keywords = ["the-lens", "systems-observatory", "knowledge-mapping", "nearly-decomposable"]
+# Stdlib-only at runtime by design, so `lens-ingest --help` works the moment pip install completes.
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[project.scripts]
+lens-ingest = "lens_ingest.launch:main"
+
+[project.urls]
+Homepage = "https://github.com/Lizo-RoadTown/lens-ingest"
+Repository = "https://github.com/Lizo-RoadTown/lens-ingest"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/lens_ingest"]
