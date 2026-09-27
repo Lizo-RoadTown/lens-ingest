@@ -1,9 +1,10 @@
 # lens-ingest — build-out plan (self-directed)
 
 This is lens-ingest's own plan for working itself out. Work top-down; check items off
-and append what you learned. Precedent to consult (not to copy as identity): the
-PROVES reference inventory at
-`tapestry/docs/decomposition/proves/process-log.md`, and the PROVES spine
+and append what you learned. Precedent to consult (not to copy as identity): the decomposition method +
+PROVES run log in the lens-core repo (github.com/Lizo-RoadTown/lens-core —
+`docs/decomposition/proves/process-log.md` and `skills/decomposition/SKILL.md`),
+the PROVES source itself (read-only), and the PROVES spine
 `staging_extractions → validation_decisions → core_entities`.
 
 ## What lens-ingest must become
