@@ -1,43 +1,67 @@
-# lens-ingest — build-out plan (self-directed)
+# lens-ingest — directions for building yourself out
 
-This is lens-ingest's own plan for working itself out. Work top-down; check items off
-and append what you learned. Precedent to consult (not to copy as identity): the decomposition method +
-PROVES run log in the lens-core repo (github.com/Lizo-RoadTown/lens-core —
-`docs/decomposition/proves/process-log.md` and `skills/decomposition/SKILL.md`),
-the PROVES source itself (read-only), and the PROVES spine
-`staging_extractions → validation_decisions → core_entities`.
+This is not a spec. It orients you: how decomposition works, which piece you are,
+where the source is, and the constraints that hold. You derive what to build by
+working the source.
 
-## What lens-ingest must become
+## 1. You figure out what to build — from the source
 
-- [ ] **1. A source reader.** Fetch source material — web / file / github. A small,
-  swappable reader interface so a lab injects which sources it draws from as config,
-  not code.
-- [ ] **2. A candidate builder.** Map a source → `candidates` rows with the evidence
-  that backs each one, and the `sources` rows that record where it came from.
-- [ ] **3. Write to the standard.** Write `candidates` + `sources` via the injected
-  `LENS_DB_URL` — against the schema defined in **lens-core**, never a hardcoded shape.
-- [ ] **4. The `ingest` CLI.** Runs reader → builder → write end-to-end. Add a
-  `--dry-run` that prints the candidate rows it *would* write without connecting
-  (testable with no DB).
-- [ ] **5. Tests.** Reader (mocked fetch), builder (source → rows mapping),
-  `--dry-run` output. Mirror the stdlib + pytest style of `tapestry-cli`.
+This repo was **not** handed a specification of what to build. What this module
+actually does, and how, is derived by **deliberately working the original source**.
+A repo cannot understand its piece from the outside. No outside agent here walked the
+real build — nothing in this file was written with friction against the actual source,
+so treat nothing here as authoritative. It is a starting orientation, not a plan to
+execute.
 
-### Migrate-from (precedent, generalize — do not copy as identity)
+## 2. How decomposition works
+
+The Lens uses a **nearly-decomposable architecture**: modules have tight coupling
+*internally* and loose coupling *across boundaries*. They meet only on well-defined
+interfaces — a shared bus (the schema) — and otherwise stay out of each other's
+internals. The full method lives in the `decomposition` skill in the lens-core repo
+(`skills/decomposition/SKILL.md`). Read it; don't restate it from memory.
+
+## 3. Your piece + the fragment map
+
+**Your piece:** lens-ingest is **intake** — it reads source material and writes
+`candidates` + `sources`. You capture and stage; you do not judge truth (that is
+review) and you do not serve or observe.
+
+**The fragment map** — all the pieces and how they meet on the shared bus:
+
+- **lens-core** — defines the shared schema (the bus) + module composition + launcher.
+- **lens-ingest** — writes `candidates` + `sources`.
+- **lens-review** — reads `candidates`, writes `decisions` + `verified`.
+- **lens-serve** — reads `verified` (API + MCP).
+- **lens-observe** — reads activity, writes/serves signals.
+
+Coordinate only through the shared schema. Stay in your piece; don't absorb a sibling's
+work.
+
+## 4. The source — go work it
+
+The original source is **PROVES** (read-only) — the system The Lens was decomposed
+from. A map of it lives in lens-core `docs/decomposition/proves/process-log.md`.
+
+The parts relevant to your piece, **as places to START looking** (not a spec to copy):
+
 - PROVES `extraction-api/app.py` — queueing.
-- PROVES `extraction-api/worker.py` + `processors/` — fetch + dispatch.
-- PROVES `production/Version 3/extractor_v3.py` — fetch tools; and `task_builder.py`
-  — prompt construction (the cleanest standalone piece).
+- PROVES `extraction-api/worker.py` and `processors/` — fetch + dispatch.
+- PROVES `production/Version 3/extractor_v3.py` — fetch tools.
+- PROVES `task_builder.py` — prompt construction.
 
-### AVOID these PROVES anti-patterns
-- Parsing LLM prose as control flow (`base.py` / `agent_v3.py`) — use **structured
-  returns** instead.
-- Hardcoded `sys.path`.
-- Inline DB-URL — the connection is injected via `LENS_DB_URL`.
+Read the actual source, understand how it really works, and derive what this module
+should be. Where any sketch here conflicts with the source or your own investigation,
+**the source and your investigation win.** Then write down what you learned.
 
-## What you own vs. don't
-Own: `sources` + `candidates` writes. Do NOT implement review/promotion, serve, or
-observe here — those are the sibling repos. lens-ingest only captures and stages.
+## 5. Structural constraints that hold regardless
 
-## Record as you go
-Append here: what you built, what you needed, what's missing, what you had to decide.
-Also write it to loom-memory scoped to `lens-ingest`. This log is capture-before-loss.
+- The database connection is **injected via `LENS_DB_URL`**, never hardcoded.
+- Write only to the schema defined in lens-core (you write `candidates` + `sources`).
+- Avoid the PROVES anti-patterns: parsing LLM prose as control flow; hardcoded
+  `sys.path`; inline DB-URL.
+
+## 6. Record as you go
+
+Append here what you learned, what you needed, and what's still missing. Also write it
+to loom-memory scoped to `lens-ingest`. This log is capture-before-loss.
